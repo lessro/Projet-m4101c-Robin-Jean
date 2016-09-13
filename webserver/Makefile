@@ -6,8 +6,7 @@ LD=$(WRAPPER)
 CFLAGS=-Wall -W -Werror -g
 LDFLAGS=-lpthread -lrt
 
-
-#Le nom de l'exécutable à fabriquer
+# Le nom de l'exécutable à fabriquer
 EXE=pawnee
 
 # Les variables HEADERS, CFILES et OBJS vont contenir respectivement
@@ -32,7 +31,7 @@ all: $(EXE)
 # Cette règle permet de construire l'exécutable. Elle dépend des fichiers
 # .o et effectue l'édition de lien. Rien de nouveau ici
 $(EXE): $(OBJS)
-        $(LD) $^ $(LDFLAGS) -o $@
+	$(LD) $^ $(LDFLAGS) -o $@ 
 
 # Cette règle permet de construire automatiquement les règles
 # de compilation pour chacun des fichiers .c
@@ -45,19 +44,18 @@ $(EXE): $(OBJS)
 # Après votre première compilation, regardez le contenu du fichier
 # makefile.dep généré afin de comprendre exactement de quoi il retourne.
 makefile.dep: $(CFILES) $(HEADERS)
-        $(CC) -MM $(CFILES) > $@
+	$(CC) -MM $(CFILES) > $@
 
 # Cette règle efface le fichier de dépendances et les fichiers .o
 clean:
-        $(RM) $(OBJS) makefile.dep
+	$(RM) $(OBJS) makefile.dep
 
 # Cette règle effectue la précédente et efface en plus l'exécutable
 mrproper: clean
-        $(RM) $(EXE)
+	$(RM) $(EXE)
 
 # On inclue le fichier de dépendance qui va contenir les règles
 # de construction des fichiers .o
 # S'il n'existe pas, make invoque automatiquement la règle
 # qui l'a pour cible
 include makefile.dep
-
