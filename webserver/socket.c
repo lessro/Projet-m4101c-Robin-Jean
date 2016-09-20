@@ -24,14 +24,21 @@ int creer_serveur(int port){
   saddr.sin_addr.s_addr = INADDR_ANY;
 
   if(bind(sock,(struct sockaddr *)&saddr,sizeof(saddr)) == -1){
-    perror("probleme bind maggle");
+    perror("probleme bind ");
   }
 
-  if(listen(sock,5) == -1){
+  if(listen(sock,10) == -1){
     perror("Probleme avec la file de connections");
   }
 
-  
+  int i = 0;
+
+  while (1) { // tant que le client ne s'est pas connecté au serveur , attente de connection du client
+    
+    printf("%i client connecte(s) \n",i);
+    i++;
+    accept(sock , NULL , NULL); // fonction blocquante
+  }
 
   return sock;
 }
