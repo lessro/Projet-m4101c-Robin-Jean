@@ -37,7 +37,13 @@ int creer_serveur(int port){
     
     printf("%i client connecte(s) \n",i);
     i++;
-    accept(sock , NULL , NULL); // fonction blocquante
+    int client = accept(sock , NULL , NULL); // fonction blocquante
+    if(client == -1){
+      perror("erreur accept");
+    }else{
+      const char *msg_bienvenue = "Bonjour ! Bienvenue\n";
+      write(client, msg_bienvenue, strlen(msg_bienvenue));
+    }
   }
 
   return sock;
