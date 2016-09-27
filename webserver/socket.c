@@ -10,9 +10,10 @@
 #include "socket.h"
 
 int creer_serveur(int port){
-
+  const char *msg_bienvenue = "Bonjour ! Bienvenue\n";
   int sock = socket(AF_INET,SOCK_STREAM,0);
   int optval = 1;
+  int pid;
 
   if(sock == -1){
     perror("erreur lors de la creation du serveur");
@@ -44,13 +45,31 @@ int creer_serveur(int port){
     printf("%i client connecte(s) \n",i);
     i++;
     int client = accept(sock , NULL , NULL); // fonction blocquante
+
     if(client == -1){
       perror("erreur accept");
     }else{
-      const char *msg_bienvenue = "Bonjour ! Bienvenue\n";
-      write(client, msg_bienvenue, strlen(msg_bienvenue));
+      pid=fork();
+      switch(pid){
+      case -1:
+          perror("bug de fork!!");
+          exit(1);
+          break;
+      case 0:
+        //fils (processus cree) nouveau client a gerer
+
+        
+        write(client, msg_bienvenue, strlen(msg_bienvenue));
+        sleep(20);
+        break;
+      default:
+          close(sock);
+          //retour début de la boucle, attente nouvelle connection (process principal)
+        break;
     }
+
   }
+}
 
   return sock;
 }
