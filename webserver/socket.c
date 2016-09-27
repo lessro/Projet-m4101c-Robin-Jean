@@ -12,6 +12,7 @@
 int creer_serveur(int port){
 
   int sock = socket(AF_INET,SOCK_STREAM,0);
+  int optval = 1;
 
   if(sock == -1){
     perror("erreur lors de la creation du serveur");
@@ -22,6 +23,11 @@ int creer_serveur(int port){
   saddr.sin_family = AF_INET;
   saddr.sin_port = htons(port);
   saddr.sin_addr.s_addr = INADDR_ANY;
+
+
+  if(setsockopt(sock, SOL_SOCKET,SO_REUSEADDR, &optval, sizeof(int))==-1){
+    perror("Can not set SO_REUSEADDR option");
+  }
 
   if(bind(sock,(struct sockaddr *)&saddr,sizeof(saddr)) == -1){
     perror("probleme bind ");
