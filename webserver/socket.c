@@ -60,10 +60,11 @@ int creer_serveur(int port){
 
         
         write(client, msg_bienvenue, strlen(msg_bienvenue));
-        sleep(20);
+        close(client);
+        exit(0);
         break;
       default:
-          close(sock);
+          close(client);
           //retour début de la boucle, attente nouvelle connection (process principal)
         break;
     }
