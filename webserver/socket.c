@@ -65,13 +65,15 @@ int creer_serveur(int port){
 	
 
 	FILE  * fichier = fdopen(client,"w+");
-	char buffer [50];
-	fgets(buffer,50,fichier);
-	 
+	char buffer [200];
+	fgets(buffer,200,fichier);
+
+	strtok (buffer,"GET");
+	  
 	
 	if (fprintf (fichier,"pawnee %s",buffer)==-1){
 	  perror ("erreur de transposition");
-	}
+	  }
 
 	fflush(fichier);
 
