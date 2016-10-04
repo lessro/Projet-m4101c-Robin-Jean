@@ -57,9 +57,26 @@ int creer_serveur(int port){
           break;
       case 0:
         //fils (processus cree) nouveau client a gerer
-
+        
         
         write(client, msg_bienvenue, strlen(msg_bienvenue));
+
+
+	
+
+	FILE  * fichier = fdopen(client,"w+");
+	char buffer [50];
+	fgets(buffer,50,fichier);
+	 
+	
+	if (fprintf (fichier,"pawnee %s",buffer)==-1){
+	  perror ("erreur de transposition");
+	}
+
+	fflush(fichier);
+
+	
+	
         close(client);
         exit(0);
         break;
