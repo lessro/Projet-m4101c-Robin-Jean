@@ -2,7 +2,7 @@
 1 - done
 2 - done
 3 - une requete http GET 
-4 - GET : type de la requete
-    HTTP : protocole utilise
-    1.1 : version de HTTP
+4 - GET : methode
+    / : arguments
+    http/1.1 : protocole
 
