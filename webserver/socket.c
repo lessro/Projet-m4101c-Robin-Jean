@@ -10,7 +10,7 @@
 #include "socket.h"
 
 int creer_serveur(int port){
-  const char *msg_bienvenue = "Bonjour ! Bienvenue\n";
+  const char *msg_bienvenue = "  /\\_/\\ \n=( °w° )= \n  )   (  // \n (__ __)// \n ";
   int sock = socket(AF_INET,SOCK_STREAM,0);
   int optval = 1;
   int pid;
@@ -56,28 +56,74 @@ int creer_serveur(int port){
           exit(1);
           break;
       case 0:
-        //fils (processus cree) nouveau client a gerer
-        
-        
+        //fils (processus cree) nouveau client a gerer        
         write(client, msg_bienvenue, strlen(msg_bienvenue));
 
+        	
+        FILE  * fichier = fdopen(client,"w+");
+        char buffer [200];
 
-	
+        fgets(buffer,200,fichier);
 
-	FILE  * fichier = fdopen(client,"w+");
-	char buffer [200];
-	fgets(buffer,200,fichier);
+        printf("recu : %s",buffer);
 
-	strtok (buffer,"GET");
-	  
-	
-	if (fprintf (fichier,"pawnee %s",buffer)==-1){
-	  perror ("erreur de transposition");
-	  }
+        int verif = 0;
 
-	fflush(fichier);
 
-	
+        //VERIFICATIONS REQUETE
+        //verification premier mot = GET
+        if(strcmp(strtok(buffer," "),"GET") == -1){
+          perror("erreur GET requete");
+          verif = -1;
+        }
+         //verification deuxieme mot existe
+        strtok(NULL," ");
+        char * mot3 = strtok(NULL," ");//on met de cote le 3e mot pr lanalyser apres
+        
+        //on verifie quil ny a pas de 4e mot
+        if(strtok(NULL," ") != NULL){
+          perror("erreur requete : nombre de mots");
+          verif = -1;
+        }
+
+        //on verifie que le 3e mot ressemble a "http/N.n"
+        if(strcmp(strtok(mot3,"/"),"HTTP") != 0){
+          perror("erreur requete : 3e mot (http)");
+          verif = -1;
+        }
+        if(strcmp(strtok(strtok(NULL,"/"),"."),"1") != 0){
+          perror(" erreur requete : 3e mot (_;x)");
+          verif = -1;
+        }
+
+        char * s2 = strtok(NULL,".");
+        //strncmp : analyser uniquement le 1er char, car retour chariot a la fin de cette merde 
+        if(strncmp(s2,"0",1) != 0 && strncmp(s2,"1",1) != 0){
+          perror(" erreur requete : 3e mot (x;_)");
+          verif = -1;
+        }
+
+
+        while(strcmp(buffer,"\n") != 0 && strcmp(buffer,"\r\n") != 0){
+          fgets(buffer,200,fichier);
+          printf("%s",buffer);
+        }
+
+        const char * erreur404 = "HTTP/1.1 404 Bad request\r\nConnection: close\r\nContent-length: 17\r\n\r\n404 Bad request\r\n";
+
+        if(verif == -1){
+          if (fprintf (fichier,erreur404)==-1){
+            perror ("erreur de transposition");
+          }
+        }else{
+          if (fprintf (fichier,"pawnee %s",buffer)==-1){
+            perror ("erreur de transposition");
+          }
+        }
+    	  
+
+  	    fflush(fichier);
+
 	
         close(client);
         exit(0);
@@ -87,7 +133,6 @@ int creer_serveur(int port){
           //retour début de la boucle, attente nouvelle connection (process principal)
         break;
     }
-
   }
 }
 
