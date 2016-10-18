@@ -69,51 +69,62 @@ int creer_serveur(int port){
 
         int verif = 0;
 
+        const char * erreur400 = "HTTP/1.1 400 Bad request\r\nConnection: close\r\nContent-length: 17\r\n\r\n400 Bad request\r\n";
+        const char * erreur404 = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-length: 15\r\n\r\n404 Not Found\r\n";
+
+        
+
         //VERIFICATIONS REQUETE
         //verification premier mot = GET
-        if(strcmp(strtok(buffer," "),"GET") == -1){
+        if(strcmp(strtok(buffer," "),"GET") != 0){
+          fprintf (fichier,erreur400);
           perror("erreur GET requete");
-          verif = -1;
+          
         }
          //verification deuxieme mot existe
-        strtok(NULL," ");
+        if(strcmp(strtok(NULL," "),"/")!=0){
+          fprintf (fichier,erreur404);
+          perror("erreur 404");
+
+        }
         char * mot3 = strtok(NULL," ");//on met de cote le 3e mot pr lanalyser apres
         
         //on verifie quil ny a pas de 4e mot
         if(strtok(NULL," ") != NULL){
+          fprintf (fichier,erreur400);
           perror("erreur requete : nombre de mots");
-          verif = -1;
+          
         }
 
         //on verifie que le 3e mot ressemble a "http/N.n"
         if(strcmp(strtok(mot3,"/"),"HTTP") != 0){
+          fprintf (fichier,erreur400);
           perror("erreur requete : 2e mot");
-          verif = -1;
-        }else{
-          if (fprintf (fichier,"Erreur 404 monsieur ! Page introuvable")==-1){
-            perror ("erreur de transfert");
-          }
+          
         }
+
+
         if(strcmp(strtok(strtok(NULL,"/"),"."),"1") != 0){
+          fprintf (fichier,erreur400);
           perror(" erreur requete : 3e mot (_;x)");
-          verif = -1;
+         
         }
 
         char * s2 = strtok(NULL,".");
         //strncmp : analyser uniquement le 1er char, car retour chariot a la fin de cette merde 
         if(strncmp(s2,"0",1) != 0 && strncmp(s2,"1",1) != 0){
+          fprintf (fichier,erreur400);
           perror(" erreur requete : 3e mot (x;_)");
-          verif = -1;
+          
         }
 
 
-        while(strcmp(buffer,"\n") != 0 && strcmp(buffer,"\r\n") != 0){
+        if(strcmp(buffer,"\n") != 0 && strcmp(buffer,"\r\n") != 0){
           fgets(buffer,200,fichier);
           printf("%s",buffer);
         }
 
-        const char * erreur400 = "HTTP/1.1 400 Bad request\r\nConnection: close\r\nContent-length: 17\r\n\r\n400 Bad request\r\n";
-
+        
         if(verif == -1){
           if (fprintf (fichier,erreur400)==-1){
             perror ("erreur de transposition");
