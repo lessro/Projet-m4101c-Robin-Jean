@@ -59,7 +59,7 @@ int creer_serveur(int port){
         //fils (processus cree) nouveau client a gerer        
         write(client, msg_bienvenue, strlen(msg_bienvenue));
 
-        	
+          
         FILE  * fichier = fdopen(client,"w+");
         char buffer [200];
 
@@ -68,7 +68,6 @@ int creer_serveur(int port){
         printf("recu : %s",buffer);
 
         int verif = 0;
-
 
         //VERIFICATIONS REQUETE
         //verification premier mot = GET
@@ -88,8 +87,12 @@ int creer_serveur(int port){
 
         //on verifie que le 3e mot ressemble a "http/N.n"
         if(strcmp(strtok(mot3,"/"),"HTTP") != 0){
-          perror("erreur requete : 3e mot (http)");
+          perror("erreur requete : 2e mot");
           verif = -1;
+        }else{
+          if (fprintf (fichier,"Erreur 404 monsieur ! Page introuvable")==-1){
+            perror ("erreur de transfert");
+          }
         }
         if(strcmp(strtok(strtok(NULL,"/"),"."),"1") != 0){
           perror(" erreur requete : 3e mot (_;x)");
@@ -109,10 +112,10 @@ int creer_serveur(int port){
           printf("%s",buffer);
         }
 
-        const char * erreur404 = "HTTP/1.1 404 Bad request\r\nConnection: close\r\nContent-length: 17\r\n\r\n404 Bad request\r\n";
+        const char * erreur400 = "HTTP/1.1 400 Bad request\r\nConnection: close\r\nContent-length: 17\r\n\r\n400 Bad request\r\n";
 
         if(verif == -1){
-          if (fprintf (fichier,erreur404)==-1){
+          if (fprintf (fichier,erreur400)==-1){
             perror ("erreur de transposition");
           }
         }else{
@@ -120,11 +123,11 @@ int creer_serveur(int port){
             perror ("erreur de transposition");
           }
         }
-    	  
+        
 
-  	    fflush(fichier);
+        fflush(fichier);
 
-	
+  
         close(client);
         exit(0);
         break;
